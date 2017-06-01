@@ -1,0 +1,6 @@
+*.retry
+.DS_Store
+*.pem
+*.csv
+tmp/*
+!tmp/.gitkeep

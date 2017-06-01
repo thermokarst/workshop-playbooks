@@ -1,0 +1,51 @@
+---
+# This role installs miniconda + qiime2 core distribution
+
+- name: check if miniconda3 dir exists
+  stat:
+    path: "{{ miniconda_path }}"
+  register: miniconda
+
+- name: download miniconda
+  become: true
+  get_url:
+    url: https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    dest: /usr/local/src/miniconda.sh
+    mode: u+rx
+  when: not miniconda.stat.exists
+
+- name: install miniconda
+  become: true
+  command: "/usr/local/src/miniconda.sh -b -p {{ miniconda_path }}"
+  when: not miniconda.stat.exists
+
+- name: make miniconda3 dir
+  become: true
+  file:
+    state: directory
+    path: "{{ miniconda_path }}"
+    owner: ubuntu
+    group: ubuntu
+    recurse: yes
+  when: not miniconda.stat.exists
+
+- name: check if qiime2 env exists
+  stat:
+    path: "{{ miniconda_path }}/envs/qiime2-{{ qiime2_release }}"
+  register: env
+
+- name: install qiime2
+  environment:
+    PATH: "{{ miniconda_path }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  command: "{{ item }}"
+  with_items:
+    - conda update conda conda-env -q -y
+    - conda create -n qiime2-{{ qiime2_release }} --file https://data.qiime2.org/distro/core/qiime2-{{ qiime2_release }}-conda-linux-64.txt
+  when: not env.stat.exists
+
+- name: activate qiime2 env (conda magic, don't touch)
+  environment:
+    PATH: "{{ miniconda_path }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  shell: source activate qiime2-{{ qiime2_release }}
+  args:
+    executable: /bin/bash
