@@ -11,6 +11,16 @@
     - nfs-kernel-server
     - htop
 
+- name: copy certs
+  copy:
+    src: "{{ ssl_cert_dir }}/{{ item }}"
+    dest: /etc/ssl/{{ item }}
+    owner: www-data
+    group: www-data
+  with_items:
+    - "*.qiime2.org.chained.crt"
+    - "*.qiime2.org.key"
+
 - name: set up nginx
   template:
     src: nginx.conf
@@ -20,25 +30,6 @@
   service:
     name: nginx
     state: restarted
-
-# - name: copy certs
-#   unarchive:
-#     src: "{{ playbook_dir }}/../tmp/certs.tar.gz"
-#     dest: /
-#     owner: www-data
-#     group: www-data
-#
-# - name: update nginx
-#   replace:
-#     dest: /etc/nginx/sites-available/default
-#     regexp: "#"
-#     replace: ""
-#
-# - name: update nginx (part 2)
-#   lineinfile:
-#     dest: /etc/nginx/sites-available/default
-#     regexp: "listen 80 default_server;"
-#     line: ""
 
 - name: create mount point
   file:
