@@ -142,17 +142,46 @@
     mode: 0777
   with_items:
     - shared
-    - shared/qiime2-moving-pictures-tutorial
-    - shared/qiime2-moving-pictures-tutorial/emp-single-end-sequences
+    - shared/moving-pictures
+    - shared/cheese
+    - shared/ecam
 
-- name: download data
+- name: download moving pictures data
   get_url:
     url: "{{ item.url }}"
-    dest: "/mnt/home/shared/qiime2-moving-pictures-tutorial/{{ item.dest }}"
+    dest: "/mnt/home/shared/moving-pictures/{{ item.dest }}"
     mode: 0777
     force: False
     timeout: 60
   with_items:
-    - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/sample_metadata.tsv", dest: "sample-metadata.tsv" }
-    - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/emp-single-end-sequences/barcodes.fastq.gz", dest: "emp-single-end-sequences/barcodes.fastq.gz" }
-    - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/emp-single-end-sequences/sequences.fastq.gz", dest: "emp-single-end-sequences/sequences.fastq.gz" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/moving-pictures/sample-metadata.tsv", dest: "sample-metadata.tsv" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/moving-pictures/emp-single-end-sequences.qza", dest: "emp-single-end-sequences.qza" }
+
+- name: download cheese data
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/mnt/home/shared/cheese/{{ item.dest }}"
+    mode: 0777
+    force: False
+    timeout: 60
+  with_items:
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/cheese/cheese-table.qza", dest: "cheese-table.qza" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/cheese/gg-99-ref-seqs.qza", dest: "gg-99-ref-seqs.qza" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/cheese/gg-99-ref-taxa.qza", dest: "gg-99-ref-taxa.qza" }
+
+- name: download ecam data
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/mnt/home/shared/ecam/{{ item.dest }}"
+    mode: 0777
+    force: False
+    timeout: 60
+  with_items:
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/ecam/ecam-metadata.tsv", dest: "ecam-metadata.tsv" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/ecam/ecam-shannon.qza", dest: "ecam-shannon.qza" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/ecam/ecam-table.qza", dest: "ecam-table.qza" }
+    - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/ecam/ecam-unweighted-unifrac-distance-matrix.qza", dest: "ecam-unweighted-unifrac-distance-matrix.qza" }
+
+- name: copy tutorial data
+  shell: "cp -r /mnt/home/shared/* /mnt/home/{{ item.name }}/workshop/"
+  with_items: "{{ users }}"

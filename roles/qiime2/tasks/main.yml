@@ -58,3 +58,12 @@
   args:
     executable: /bin/bash
   when: not env.stat.exists
+
+- name: install q2-clawback
+  environment:
+    PATH: "{{ miniconda_path }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  shell: "{{ item }}"
+  with_items:
+    - "conda install -n qiime2-{{ qiime2_release }} -y -c kaehler -c conda-forge q2-clawback"
+  args:
+    executable: /bin/bash
