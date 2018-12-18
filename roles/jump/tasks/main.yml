@@ -182,6 +182,11 @@
     - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/ecam/ecam-table.qza", dest: "ecam-table.qza" }
     - { url: "https://s3-us-west-2.amazonaws.com/qiime2-workshops/faes18/starting-data/ecam/ecam-unweighted-unifrac-distance-matrix.qza", dest: "ecam-unweighted-unifrac-distance-matrix.qza" }
 
+# This has the wrong permissions
 - name: copy tutorial data
   shell: "cp -r /mnt/home/shared/* /mnt/home/{{ item.name }}/workshop/"
+  with_items: "{{ users }}"
+
+- name: fix permissions
+  shell: "chown -R {{ item.name }}:{{ item.group }} /mnt/home/{{ item.name }}"
   with_items: "{{ users }}"
