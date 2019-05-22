@@ -14,7 +14,7 @@
 
 ```bash
 $ conda create -n workshop-prov python=2.7
-$ source activate workshop-prov
+$ conda activate workshop-prov
 $ pip install -r requirements.txt
 $ export SECRETS=/path/to/secrets
 $ export AWS_ACCESS_KEY_ID='AK123'
