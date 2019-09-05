@@ -42,12 +42,12 @@
 - name: prep shared drive filesystem
   filesystem:
     fstype: ext4
-    dev: /dev/xvdb
+    dev: /dev/nvme1n1
 
 - name: mount ebs
   mount:
     name: /mnt/home
-    src: /dev/xvdb
+    src: /dev/nvme1n1
     fstype: auto
     state: mounted
 
