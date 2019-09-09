@@ -71,6 +71,9 @@
     - "source activate qiime2-{{ qiime2_release }} && pip install https://github.com/qiime2/q2-shogun/archive/master.zip"
     - "conda install -n qiime2-{{ qiime2_release }} -c cduvallet -c conda-forge dbotu_q2"
     - "conda install -n qiime2-{{ qiime2_release }} -c cduvallet q2_perc_norm"
+    - "conda install -n qiime2-{{ qiime2_release }} -c conda-forge r-tidyverse r-devtools"
+    - "conda install -n qiime2-{{ qiime2_release }} -c bioconda bioconductor-rhdf5"
+    - "source activate qiime2-{{ qiime2_release }} && TAR=\"/bin/tar\" R -e \"library(tidyverse);devtools::install_github('jbisanz/qiime2R');\""
     - "source activate qiime2-{{ qiime2_release }} && qiime dev refresh-cache"
   args:
     executable: /usr/bin/zsh
