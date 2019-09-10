@@ -41,7 +41,7 @@ def generate_names(count=1):
         while username in usernames:
             username = _make_name()
         usernames.add(username)
-    return [(x, x) for x in usernames]
+    return [(x, 'kmutt') for x in usernames]
 
 
 if __name__ == '__main__':
