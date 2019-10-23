@@ -12,8 +12,8 @@ compute_host_count: 1
 volume_size: 8
 
 # PRODUCTION CONFIG
-# jump_host_type: m4.4xlarge
-# compute_host_type: m4.2xlarge
+# jump_host_type: m5.4xlarge
+# compute_host_type: m5.2xlarge
 # compute_host_count: 12
 # volume_size: 50
 
