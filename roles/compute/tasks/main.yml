@@ -2,11 +2,10 @@
 
 - name: set up prereqs
   apt:
-    name: "{{ item }}"
     state: latest
-  with_items:
-    - nfs-common
-    - htop
+    name:
+      - nfs-common
+      - htop
 
 - name: create mount point
   file:
@@ -39,3 +38,5 @@
     createhome: False
     home: "/mnt/home/{{ item.name }}"
   with_items: "{{ users }}"
+
+

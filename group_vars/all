@@ -9,13 +9,13 @@ accts_per_host: 8
 jump_host_type: t3.small
 compute_host_type: t3.nano
 compute_host_count: 1
-volume_size: 8
+volume_size: "8"
 
 # PRODUCTION CONFIG
 # jump_host_type: m5.4xlarge
 # compute_host_type: m5.2xlarge
 # compute_host_count: 12
-# volume_size: 50
+# volume_size: "50"
 
 workshop_name: "{{ lookup('env', 'QIIME_WORKSHOP_NAME') }}"
 eip: "{{ lookup('env', 'QIIME_EIP') }}"
