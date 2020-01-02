@@ -100,7 +100,7 @@
     home: "/mnt/home/{{ item.name }}"
   with_items: "{{ users }}"
 
-- name: create admin accounts
+- name: create admin account
   user:
     name: "{{ item }}"
     password: "$6$rounds=656000$odzDwS9gk.h9jRDb$DgPtdKpgV0qg.WP6d7Rz1Jc51GsGyiNhzjMmga/Nh5Gwwav/k5OUTk8ACcZTYSTOc//uZVzaCWilF9Mx2ImDi."
@@ -110,17 +110,25 @@
     groups: "sudo"
   with_items:
     - admin1
-    - admin2
-    - admin3
 
 - name: configure ssh for jumping
-  blockinfile:
+  template:
+    src: sshd_config
     dest: /etc/ssh/sshd_config
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ item }}"
-    block: |
-      Match Group {{ hostvars[item]['grp'] }}
-          ForceCommand ssh {{ item }}
-  with_items: "{{ groups['compute_hosts'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+    validate: /usr/sbin/sshd -t -f %s
+    backup: yes
+
+# - name: configure ssh for jumping
+#   blockinfile:
+#     dest: /etc/ssh/sshd_config
+#     marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ item }}"
+#     block: |
+#       Match Group {{ hostvars[item]['grp'] }}
+#           ForceCommand ssh {{ item }}
+#   with_items: "{{ groups['compute_hosts'] }}"
 
 - name: restart services
   service:
