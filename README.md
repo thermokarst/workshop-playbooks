@@ -15,6 +15,7 @@
 ```bash
 $ conda create -n workshop-prov2 -c conda-forge ansible boto3
 $ source activate workshop-prov
+$ pip install passlib
 $ export SECRETS=/path/to/secrets
 $ export AWS_ACCESS_KEY_ID='AK123'
 $ export AWS_SECRET_ACCESS_KEY='abc123'

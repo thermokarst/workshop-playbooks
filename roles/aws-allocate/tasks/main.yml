@@ -173,8 +173,14 @@
     path: "{{ playbook_dir }}/../tmp/roster.json"
   register: roster
 
+- debug:
+    var: ec2_compute_instances
+
+- debug:
+    var: groups
+
 - name: generate account info
-  command: "python {{ playbook_dir }}/../bin/generate_accts.py '{{ ec2_compute_instances | to_json }}' {{ accts_per_host }}"
+  command: "python {{ playbook_dir }}/../bin/generate_accts.py '{{ ec2_compute_instances | to_json }}' '{{ groups['compute_hosts'] | to_json }}' {{ accts_per_host }}"
   when: not roster.stat.exists
 
 - pause: seconds=60

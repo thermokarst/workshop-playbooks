@@ -5,7 +5,6 @@
   apt:
     state: present
     name:
-      - python-apt
       - unzip
       - tree
       - zsh

@@ -46,13 +46,16 @@ def generate_names(count=1):
 
 if __name__ == '__main__':
     host_data = json.loads(sys.argv[1])
+    group_data = json.loads(sys.argv[2])
+    workers = {'worker%d' % i: ip for i, ip in enumerate(group_data)}
+
     count = int(host_data[0]['exact_count'])
-    if os.path.exists(sys.argv[2]):
-        with open(sys.argv[2]) as fh:
+    if os.path.exists(sys.argv[3]):
+        with open(sys.argv[3]) as fh:
             names = list(csv.reader(fh))[1:]  # skip header
         num_per_host = math.ceil(len(names)/float(count))  # Py2, float div!
     else:
-        num_per_host = int(sys.argv[2])
+        num_per_host = int(sys.argv[3])
         names = generate_names(count * num_per_host)
 
     csv_users = []
@@ -65,6 +68,7 @@ if __name__ == '__main__':
             'name': name,
             'password': password_hash,
             'group': group,
+            'worker_ip': workers[group],
         }
         csv_users.append(csv_record)
         json_record = {
@@ -72,6 +76,7 @@ if __name__ == '__main__':
             'hash': password_hash,
             'group': group,
             'uid': uid,
+            'worker_ip': workers[group],
         }
         json_users.append(json_record)
     with open('../tmp/roster.csv', 'w') as fh:

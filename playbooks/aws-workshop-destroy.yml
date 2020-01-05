@@ -6,7 +6,7 @@
   vars_files:
     - ../group_vars/all
   tasks:
-    - name: gather facts
+    - name: gather instance facts
       ec2_instance_info:
         region: "{{ ec2_region }}"
         filters:
@@ -42,13 +42,30 @@
         state: absent
       register: key
 
+    - name: gather vpc facts
+      ec2_vpc_net_info:
+        region: "{{ ec2_region }}"
+        filters:
+          "tag:Name": "{{ workshop_name }}"
+      register: vpc
+
+    - name: early exit
+      meta: end_play
+      when: vpc.vpcs|length == 0
+
+    - name: gather security group facts
+      ec2_group_info:
+        region: "{{ ec2_region }}"
+        filters:
+          vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
+      register: sg
+
     - name: destroy security groups
       ec2_group:
         region: "{{ ec2_region }}"
-        name: "{{ item.name }}"
-        description: "{{ item.desc }}"
+        group_id: "{{ item.group_id }}"
         state: absent
-      with_items: "{{ security_groups }}"
+      with_items: "{{ sg.security_groups }}"
 
     - name: destroy vpc subnet
       ec2_vpc_subnet:
@@ -59,18 +76,25 @@
       with_items: "{{ facts.instances }}"
       register: subnets
 
+    - name: gather route table facts
+      ec2_vpc_route_table_info:
+        region: "{{ ec2_region }}"
+        filters:
+          vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
+      register: route_tables
+
     - name: destroy vpc route table
       ec2_vpc_route_table:
+        vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
         region: "{{ ec2_region }}"
-        vpc_id: "{{ item.item.vpc_id }}"
-        tags:
-            Name: "{{ item.item.tags.Name }}"
         state: absent
-      with_items: "{{ subnets.results }}"
+        route_table_id: "{{ item.id }}"
+        lookup: id
+      with_items: "{{ route_tables.route_tables }}"
 
     - name: destroy vpc
       ec2_vpc_net:
         region: "{{ ec2_region }}"
-        vpc_id: "{{ item.vpc_id }}"
+        cidr_block: "{{ vpc_cidr_block }}"
+        name: "{{ workshop_name }}"
         state: absent
-      with_items: "{{ facts.instances }}"
