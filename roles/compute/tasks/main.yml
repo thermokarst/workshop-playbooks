@@ -43,3 +43,18 @@
   hostname:
     name: "{{ hostvars[item]['grp'] }}"
   with_items: "{{ groups['compute_hosts'] }}"
+
+- name: configure ssh
+  template:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+    validate: /usr/sbin/sshd -t -f %s
+    backup: yes
+
+- name: restart ssh
+  service:
+    name: ssh
+    state: restarted

@@ -53,48 +53,74 @@
       meta: end_play
       when: vpc.vpcs|length == 0
 
-    - name: gather security group facts
-      ec2_group_info:
-        region: "{{ ec2_region }}"
-        filters:
-          vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
-      register: sg
-
-    - name: destroy security groups
-      ec2_group:
-        region: "{{ ec2_region }}"
-        group_id: "{{ item.group_id }}"
-        state: absent
-      with_items: "{{ sg.security_groups }}"
-
-    - name: destroy vpc subnet
-      ec2_vpc_subnet:
-        region: "{{ ec2_region }}"
-        vpc_id: "{{ item.vpc_id }}"
-        cidr: "{{ vpc_cidr_block }}"
-        state: absent
-      with_items: "{{ facts.instances }}"
-      register: subnets
-
-    - name: gather route table facts
-      ec2_vpc_route_table_info:
-        region: "{{ ec2_region }}"
-        filters:
-          vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
-      register: route_tables
-
-    - name: destroy vpc route table
-      ec2_vpc_route_table:
-        vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
-        region: "{{ ec2_region }}"
-        state: absent
-        route_table_id: "{{ item.id }}"
-        lookup: id
-      with_items: "{{ route_tables.route_tables }}"
+      #     - name: destroy vpc subnet
+      #       ec2_vpc_subnet:
+      #         region: "{{ ec2_region }}"
+      #         vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
+      #         cidr: "{{ vpc_cidr_block }}"
+      #         state: absent
+      #       register: subnets
+      # 
+      #     - debug:
+      #         var: subnets
+      # 
+      #     - name: gather nacl facts
+      #       ec2_vpc_nacl_info:
+      #         region: "{{ ec2_region }}"
+      #         filters:
+      #           vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
+      #       register: nacl
+      # 
+      #     - debug:
+      #         var: nacl
+      # 
+      #     - name: destroy nacl
+      #       ec2_vpc_nacl:
+      #         region: "{{ ec2_region }}"
+      #         nacl_id: "{{ nacl.nacls[0].nacl_id }}"
+      #         vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
+      #         state: absent
+      # 
+      #     - name: gather security group facts
+      #       ec2_group_info:
+      #         region: "{{ ec2_region }}"
+      #         filters:
+      #           vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
+      #       register: sg
+      # 
+      #     - debug:
+      #         var: sg
+      # 
+      #     - debug:
+      #         var: vpc
+      # 
+      #     - name: destroy security groups
+      #       ec2_group:
+      #         region: "{{ ec2_region }}"
+      #         group_id: "{{ item.group_id }}"
+      #         state: absent
+      #       with_items: "{{ sg.security_groups }}"
+      # 
+      #     - name: gather igw facts
+      #       ec2_vpc_igw_info:
+      #         region: "{{ ec2_region }}"
+      #         filters:
+      #           "attachment.vpc-id": "{{ vpc.vpcs[0].vpc_id }}"
+      #       register: igw
+      # 
+      #     - debug:
+      #         var: igw
+      # 
+      #     - name: destroy igw
+      #       ec2_vpc_igw:
+      #         region: "{{ ec2_region }}"
+      #         state: absent
+      #         vpc_id: "{{ vpc.vpcs[0].vpc_id }}"
 
     - name: destroy vpc
       ec2_vpc_net:
         region: "{{ ec2_region }}"
         cidr_block: "{{ vpc_cidr_block }}"
+        purge_cidrs: yes
         name: "{{ workshop_name }}"
         state: absent

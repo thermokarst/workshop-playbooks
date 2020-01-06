@@ -105,26 +105,6 @@
     key: "{{ item.ssh_public_key }}"
   with_items: "{{ accts.results }}"
 
-- debug:
-    var: accts
-
-# TODO: this is the wrong key. duh.
-- name: add known hosts
-  known_hosts:
-    name: "{{ item.item.worker_ip }}"
-    state: present
-    key: "{{ item.item.worker_ip }} {{ item.ssh_public_key }}"
-    path: "/mnt/home/{{ item.name }}/.ssh/known_hosts"
-  with_items: "{{ accts.results }}"
-
-- name: fix known_hosts permissions
-  file:
-    path: "/mnt/home/{{ item.name }}/.ssh/known_hosts"
-    owner: "{{ item.name }}"
-    group: "{{ item.group }}"
-    mode: '0644'
-  with_items: "{{ accts.results }}"
-
 - name: configure ssh for jumping
   template:
     src: sshd_config

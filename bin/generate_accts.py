@@ -80,7 +80,7 @@ if __name__ == '__main__':
         }
         json_users.append(json_record)
     with open('../tmp/roster.csv', 'w') as fh:
-        w = csv.DictWriter(fh, ['name', 'password', 'group'])
+        w = csv.DictWriter(fh, ['name', 'password', 'group', 'worker_ip'])
         w.writeheader()
         w.writerows(csv_users)
     with open('../tmp/roster.json', 'w') as fh:

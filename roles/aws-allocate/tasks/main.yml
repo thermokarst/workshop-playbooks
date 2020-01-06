@@ -28,10 +28,22 @@
     state: present
   register: subnet
 
-- name: create vpc route table
+- name: gather route table facts
+  ec2_vpc_route_table_info:
+    region: "{{ ec2_region }}"
+    filters:
+      vpc-id: "{{ vpc.vpc.id }}"
+  register: route_table
+
+- debug:
+    var: route_table
+
+- name: configure vpc route table
   ec2_vpc_route_table:
     vpc_id: "{{ vpc.vpc.id }}"
     region: "{{ ec2_region }}"
+    route_table_id: "{{ route_table.route_tables[0].id }}"
+    lookup: id
     subnets:
       - "{{ subnet.subnet.id }}"
     routes:
@@ -172,12 +184,6 @@
   stat:
     path: "{{ playbook_dir }}/../tmp/roster.json"
   register: roster
-
-- debug:
-    var: ec2_compute_instances
-
-- debug:
-    var: groups
 
 - name: generate account info
   command: "python {{ playbook_dir }}/../bin/generate_accts.py '{{ ec2_compute_instances | to_json }}' '{{ groups['compute_hosts'] | to_json }}' {{ accts_per_host }}"
