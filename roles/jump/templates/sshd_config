@@ -29,6 +29,7 @@ MaxStartups 200
 AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/openssh/sftp-server
 UsePAM yes
+Banner /etc/ssh/sshd_banner
 
 {% for worker_ip in groups['compute_hosts'] %}
 Match Group {{ hostvars[worker_ip]['grp'] }}

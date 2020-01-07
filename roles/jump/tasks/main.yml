@@ -105,6 +105,14 @@
     key: "{{ item.ssh_public_key }}"
   with_items: "{{ accts.results }}"
 
+- name: copy ssh login banner
+  template:
+    src: sshd_banner
+    dest: /etc/ssh/sshd_banner
+    owner: root
+    group: root
+    mode: '0600'
+
 - name: configure ssh for jumping
   template:
     src: sshd_config
@@ -123,25 +131,3 @@
     - ssh
     - nfs-kernel-server
     - nginx
-
-# - name: shared data dir
-#   file:
-#     path: "/mnt/home/{{ item }}"
-#     state: directory
-#     mode: 0777
-#   with_items:
-#     - shared
-#     - shared/qiime2-moving-pictures-tutorial
-#     - shared/qiime2-moving-pictures-tutorial/emp-single-end-sequences
-#
-# - name: download data
-#   get_url:
-#     url: "{{ item.url }}"
-#     dest: "/mnt/home/shared/qiime2-moving-pictures-tutorial/{{ item.dest }}"
-#     mode: 0777
-#     force: False
-#     timeout: 60
-#   with_items:
-#     - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/sample_metadata.tsv", dest: "sample-metadata.tsv" }
-#     - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/emp-single-end-sequences/barcodes.fastq.gz", dest: "emp-single-end-sequences/barcodes.fastq.gz" }
-#     - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/emp-single-end-sequences/sequences.fastq.gz", dest: "emp-single-end-sequences/sequences.fastq.gz" }
