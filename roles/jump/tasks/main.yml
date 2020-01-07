@@ -3,13 +3,12 @@
 
 - name: set up prereqs
   apt:
-    name: "{{ item }}"
     state: latest
-  with_items:
-    - nginx
-    - nfs-common
-    - nfs-kernel-server
-    - htop
+    name:
+      - nginx
+      - nfs-common
+      - nfs-kernel-server
+      - htop
 
 - name: copy certs
   copy:
@@ -77,11 +76,6 @@
     path: /etc/skel/.ssh
     state: directory
 
-- name: add admin authorized keys
-  copy:
-    src: "{{ authorized_keys_dir }}/authorized_keys"
-    dest: /etc/skel/.ssh/authorized_keys
-
 - name: create workshop working dir
   file:
     path: "{{ item.path }}"
@@ -98,29 +92,36 @@
     shell: /usr/bin/zsh
     createhome: True
     home: "/mnt/home/{{ item.name }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
   with_items: "{{ users }}"
+  register: accts
 
-- name: create admin accounts
-  user:
-    name: "{{ item }}"
-    password: "$6$rounds=656000$odzDwS9gk.h9jRDb$DgPtdKpgV0qg.WP6d7Rz1Jc51GsGyiNhzjMmga/Nh5Gwwav/k5OUTk8ACcZTYSTOc//uZVzaCWilF9Mx2ImDi."
-    shell: /usr/bin/zsh
-    createhome: True
-    home: "/home/{{ item }}"
-    groups: "sudo"
-  with_items:
-    - admin1
-    - admin2
-    - admin3
+- name: add authorized key
+  authorized_key:
+    user: "{{ item.name }}"
+    state: present
+    key: "{{ item.ssh_public_key }}"
+  with_items: "{{ accts.results }}"
+
+- name: copy ssh login banner
+  template:
+    src: sshd_banner
+    dest: /etc/ssh/sshd_banner
+    owner: root
+    group: root
+    mode: '0600'
 
 - name: configure ssh for jumping
-  blockinfile:
+  template:
+    src: sshd_config
     dest: /etc/ssh/sshd_config
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ item }}"
-    block: |
-      Match Group {{ hostvars[item]['grp'] }}
-          ForceCommand ssh {{ item }}
-  with_items: "{{ groups['compute_hosts'] }}"
+    owner: root
+    group: root
+    mode: '0600'
+    validate: /usr/sbin/sshd -t -f %s
+    backup: yes
 
 - name: restart services
   service:
@@ -130,31 +131,3 @@
     - ssh
     - nfs-kernel-server
     - nginx
-
-- name: remove known_hosts
-  file:
-    path: "/mnt/home/{{ item.name }}/.ssh/known_hosts"
-    state: absent
-  with_items: "{{ users }}"
-
-- name: shared data dir
-  file:
-    path: "/mnt/home/{{ item }}"
-    state: directory
-    mode: 0777
-  with_items:
-    - shared
-    - shared/qiime2-moving-pictures-tutorial
-    - shared/qiime2-moving-pictures-tutorial/emp-single-end-sequences
-
-- name: download data
-  get_url:
-    url: "{{ item.url }}"
-    dest: "/mnt/home/shared/qiime2-moving-pictures-tutorial/{{ item.dest }}"
-    mode: 0777
-    force: False
-    timeout: 60
-  with_items:
-    - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/sample_metadata.tsv", dest: "sample-metadata.tsv" }
-    - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/emp-single-end-sequences/barcodes.fastq.gz", dest: "emp-single-end-sequences/barcodes.fastq.gz" }
-    - { url: "https://data.qiime2.org/{{ qiime2_release }}/tutorials/moving-pictures/emp-single-end-sequences/sequences.fastq.gz", dest: "emp-single-end-sequences/sequences.fastq.gz" }

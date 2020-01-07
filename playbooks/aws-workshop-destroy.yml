@@ -6,8 +6,8 @@
   vars_files:
     - ../group_vars/all
   tasks:
-    - name: gather facts
-      ec2_remote_facts:
+    - name: gather instance facts
+      ec2_instance_info:
         region: "{{ ec2_region }}"
         filters:
           instance.group-name: "{{ group_name }}"
@@ -16,14 +16,13 @@
     - name: destroy instances
       ec2:
         region: "{{ ec2_region }}"
-        instance_id: "{{ item.id }}"
+        instance_id: "{{ item.instance_id }}"
         state: absent
         wait: true
       with_items: "{{ facts.instances }}"
 
-    # TODO: pull out into own
     - name: gather ebs facts
-      ec2_vol_facts:
+      ec2_vol_info:
         region: "{{ ec2_region }}"
         filters:
           "tag:Name": "{{ workshop_name }}"
@@ -43,38 +42,5 @@
         state: absent
       register: key
 
-    - name: destroy security groups
-      ec2_group:
-        region: "{{ ec2_region }}"
-        name: "{{ item.name }}"
-        description: "{{ item.desc }}"
-        state: absent
-      with_items: "{{ security_groups }}"
-
-    - name: destroy vpc subnet
-      ec2_vpc_subnet:
-        region: "{{ ec2_region }}"
-        vpc_id: "{{ item.vpc_id }}"
-        cidr: "{{ vpc_cidr_block }}"
-        state: absent
-      with_items: "{{ facts.instances }}"
-      register: subnets
-
-    - name: destroy vpc route table
-      ec2_vpc_route_table:
-        region: "{{ ec2_region }}"
-        vpc_id: "{{ item.item.vpc_id }}"
-        tags:
-            Name: "{{ item.item.tags.Name }}"
-        state: absent
-      with_items: "{{ subnets.results }}"
-
-    - name: destroy vpc
-      ec2_vpc:
-        region: "{{ ec2_region }}"
-        vpc_id: "{{ item.vpc_id }}"
-        resource_tags:
-          Name: "{{ workshop_name }}"
-          Environment: "{{ workshop_name }}"
-        state: absent
-      with_items: "{{ facts.instances }}"
+    - debug:
+        msg: "Delete the VPC manually through the AWS Console"

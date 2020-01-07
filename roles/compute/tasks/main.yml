@@ -2,11 +2,10 @@
 
 - name: set up prereqs
   apt:
-    name: "{{ item }}"
     state: latest
-  with_items:
-    - nfs-common
-    - htop
+    name:
+      - nfs-common
+      - htop
 
 - name: create mount point
   file:
@@ -39,3 +38,23 @@
     createhome: False
     home: "/mnt/home/{{ item.name }}"
   with_items: "{{ users }}"
+
+- name: update hostname
+  hostname:
+    name: "{{ hostvars[item]['grp'] }}"
+  with_items: "{{ groups['compute_hosts'] }}"
+
+- name: configure ssh
+  template:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+    validate: /usr/sbin/sshd -t -f %s
+    backup: yes
+
+- name: restart ssh
+  service:
+    name: ssh
+    state: restarted
