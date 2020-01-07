@@ -35,9 +35,6 @@
       vpc-id: "{{ vpc.vpc.id }}"
   register: route_table
 
-- debug:
-    var: route_table
-
 - name: configure vpc route table
   ec2_vpc_route_table:
     vpc_id: "{{ vpc.vpc.id }}"
