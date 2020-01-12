@@ -39,11 +39,6 @@
     home: "/mnt/home/{{ item.name }}"
   with_items: "{{ users }}"
 
-- name: update hostname
-  hostname:
-    name: "{{ hostvars[item]['grp'] }}"
-  with_items: "{{ groups['compute_hosts'] }}"
-
 - name: configure ssh
   template:
     src: sshd_config
