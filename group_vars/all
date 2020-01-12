@@ -3,19 +3,19 @@
 ec2_region: us-west-2
 image_id: ami-45224425
 # This can be an int, or a filepath to a csv (with 2 cols and a header) of user/pass
-accts_per_host: 8
+accts_per_host: 9  # include an extra throw-away acct on each node
 
 # TESTING CONFIG
-jump_host_type: t3.small
-compute_host_type: t3.nano
-compute_host_count: 1
-volume_size: "8"
+# jump_host_type: t3.small
+# compute_host_type: t3.nano
+# compute_host_count: 1
+# volume_size: "8"
 
 # PRODUCTION CONFIG
-# jump_host_type: m5.4xlarge
-# compute_host_type: m5.2xlarge
-# compute_host_count: 12
-# volume_size: "50"
+jump_host_type: m5.8xlarge
+compute_host_type: m5.2xlarge
+compute_host_count: 14
+volume_size: "50"
 
 workshop_name: "{{ lookup('env', 'QIIME_WORKSHOP_NAME') }}"
 eip: "{{ lookup('env', 'QIIME_EIP') }}"

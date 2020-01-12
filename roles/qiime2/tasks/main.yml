@@ -54,7 +54,7 @@
   shell: "{{ item }}"
   with_items:
     - "conda env create -n qiime2-{{ qiime2_release }} --file /tmp/env.yml"
-    - "source activate qiime2-{{ qiime2_release }}"
+    - "source activate qiime2-{{ qiime2_release }} && qiime dev refresh-cache"
   args:
     executable: /usr/bin/zsh
   when: not env.stat.exists
@@ -67,6 +67,5 @@
     - "conda install -n qiime2-{{ qiime2_release }} -c conda-forge r-tidyverse r-devtools -y"
     - "conda install -n qiime2-{{ qiime2_release }} -c bioconda bioconductor-rhdf5 -y"
     - "source activate qiime2-{{ qiime2_release }} && TAR=\"/bin/tar\" R -e \"library(tidyverse);devtools::install_github('jbisanz/qiime2R');\""
-    - "source activate qiime2-{{ qiime2_release }} && qiime dev refresh-cache"
   args:
     executable: /usr/bin/zsh
