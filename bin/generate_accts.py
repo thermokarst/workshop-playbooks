@@ -76,7 +76,6 @@ if __name__ == '__main__':
         csv_record = {
             'username': name,
             'password': passwd,
-            'password_hash': password_hash,
             'group': group,
             'worker_ip': workers[group],
         }
