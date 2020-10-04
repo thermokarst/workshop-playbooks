@@ -14,7 +14,8 @@ accts_per_host: 8
 # PRODUCTION CONFIG
 jump_host_type: m5.4xlarge
 compute_host_type: m5.2xlarge
-compute_host_count: 13
+# TODO: undo
+compute_host_count: 1
 volume_size: "50"
 
 workshop_name: "{{ lookup('env', 'QIIME_WORKSHOP_NAME') }}"

@@ -35,6 +35,13 @@ def _make_name():
     return '-'.join(name)
 
 
+def _make_pass():
+    password = str(uuid.uuid4())
+    for val in '-01':
+        password = password.replace(val, '')
+    return password[0:20]
+
+
 def generate_names(count=1):
     usernames = set()
     for i in range(count):
@@ -43,8 +50,7 @@ def generate_names(count=1):
             username = _make_name()
         usernames.add(username)
 
-    # TODO: replace ambiguous characters
-    return [(x, str(uuid.uuid4()).replace('-', '')[0:20]) for x in usernames]
+    return [(x, _make_pass()) for x in usernames]
 
 
 if __name__ == '__main__':
@@ -68,7 +74,7 @@ if __name__ == '__main__':
         group = 'worker%d' % int((i // num_per_host))
         uid = i + 2000
         csv_record = {
-            'name': name,
+            'username': name,
             'password': passwd,
             'password_hash': password_hash,
             'group': group,
@@ -84,7 +90,7 @@ if __name__ == '__main__':
         }
         json_users.append(json_record)
     with open('../tmp/roster.csv', 'w') as fh:
-        w = csv.DictWriter(fh, ['name', 'password', 'group', 'worker_ip'])
+        w = csv.DictWriter(fh, ['username', 'password', 'group', 'worker_ip'])
         w.writeheader()
         w.writerows(csv_users)
     with open('../tmp/roster.json', 'w') as fh:
