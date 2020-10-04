@@ -6,6 +6,7 @@ import os
 import random
 import sys
 import math
+import uuid
 
 from passlib.hash import sha512_crypt
 
@@ -41,7 +42,9 @@ def generate_names(count=1):
         while username in usernames:
             username = _make_name()
         usernames.add(username)
-    return [(x, x) for x in usernames]
+
+    # TODO: replace ambiguous characters
+    return [(x, str(uuid.uuid4()).replace('-', '')[0:20]) for x in usernames]
 
 
 if __name__ == '__main__':
@@ -66,7 +69,8 @@ if __name__ == '__main__':
         uid = i + 2000
         csv_record = {
             'name': name,
-            'password': password_hash,
+            'password': passwd,
+            'password_hash': password_hash,
             'group': group,
             'worker_ip': workers[group],
         }

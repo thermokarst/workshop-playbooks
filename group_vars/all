@@ -6,16 +6,16 @@ image_id: ami-45224425
 accts_per_host: 8
 
 # TESTING CONFIG
-jump_host_type: t3.small
-compute_host_type: t3.nano
-compute_host_count: 1
-volume_size: "8"
+# jump_host_type: t3.small
+# compute_host_type: t3.nano
+# compute_host_count: 1
+# volume_size: "8"
 
 # PRODUCTION CONFIG
-# jump_host_type: m5.4xlarge
-# compute_host_type: m5.2xlarge
-# compute_host_count: 12
-# volume_size: "50"
+jump_host_type: m5.4xlarge
+compute_host_type: m5.2xlarge
+compute_host_count: 13
+volume_size: "50"
 
 workshop_name: "{{ lookup('env', 'QIIME_WORKSHOP_NAME') }}"
 eip: "{{ lookup('env', 'QIIME_EIP') }}"
@@ -27,7 +27,7 @@ group_name: ssh-workshops
 vpc_cidr_block: 172.23.0.0/16
 workshop_key_fn: workshopkey-private.pem
 
-qiime2_release: "2020.6"
+qiime2_release: "2020.8"
 miniconda_path: /mnt/home/miniconda3
 
 security_groups:
