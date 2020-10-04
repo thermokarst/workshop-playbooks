@@ -42,7 +42,6 @@
     - conda update conda -q -y
 
 - name: download env file
-  become: true
   get_url:
     url: https://data.qiime2.org/distro/core/qiime2-{{ qiime2_release }}-py36-linux-conda.yml
     dest: /tmp/env.yml
@@ -58,15 +57,3 @@
   args:
     executable: /usr/bin/zsh
   when: not env.stat.exists
-
-- name: install extra plugins
-  environment:
-    PATH: "{{ miniconda_path }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-  shell: "{{ item }}"
-  with_items:
-    - "conda install -n qiime2-{{ qiime2_release }} -c conda-forge r-tidyverse r-devtools -y"
-    - "conda install -n qiime2-{{ qiime2_release }} -c bioconda bioconductor-rhdf5 -y"
-    - "source activate qiime2-{{ qiime2_release }} && TAR=\"/bin/tar\" R -e \"library(tidyverse);devtools::install_github('jbisanz/qiime2R');quit(save=\"no\");\""
-    - "source activate qiime2-{{ qiime2_release }} && qiime dev refresh-cache"
-  args:
-    executable: /usr/bin/zsh
