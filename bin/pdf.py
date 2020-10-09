@@ -11,7 +11,8 @@ from reportlab.lib import pagesizes
 def write_cheat_sheet(base_template, name, username, password, output_dir):
     bytez = io.BytesIO()
     url = 'https://workshop-server.qiime2.org/%s' % username
-    out_fn = os.path.join(output_dir, '%s.pdf' % username)
+    base_fn = name.replace(' ', '-').replace('.', '').replace('--', '-').lower()
+    out_fn = os.path.join(output_dir, '%s-%s.pdf' % (base_fn, username))
 
     c = canvas.Canvas(bytez, pagesize=pagesizes.A4)
     c.setFillColorRGB(1, 1, 1)
@@ -50,6 +51,6 @@ if __name__ == '__main__':
         reader = csv.reader(fh, delimiter=',')
         next(reader)  # skip first row
         for row in reader:
-            name, username, password = row[0], row[2], row[3]
+            name, username, password = row[0], row[3], row[4]
             print('writing `%s` `%s` `%s`' % (name, username, password))
             write_cheat_sheet(base_template, name, username, password, output_dir)
